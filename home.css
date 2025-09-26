@@ -1,0 +1,76 @@
+/* 1. Define variables for light and dark themes */
+:root, [data-theme="light"] {
+    --bs-body-bg: #f8f9fa;
+    --bs-body-color: #212529;
+    --sidebar-bg: #fff;
+    --sidebar-color: #212529;
+    --sidebar-link-hover-bg: #f0f0f0;
+    --card-bg: #fff;
+    --card-border-color: rgba(0,0,0,.125);
+    --header-bg: #fff;
+    --header-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, .075);
+}
+
+[data-theme="dark"] {
+    --bs-body-bg: #121212;
+    --bs-body-color: #e0e0e0;
+    --sidebar-bg: #1e1e1e;
+    --sidebar-color: #e0e0e0;
+    --sidebar-link-hover-bg: #333;
+    --card-bg: #1e1e1e;
+    --card-border-color: #444;
+    --header-bg: #1e1e1e;
+    --header-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, .5);
+}
+
+/* General Styles */
+body {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Responsive Header */
+.navbar {
+    background-color: var(--header-bg);
+    box-shadow: var(--header-shadow);
+}
+.navbar-brand {
+    color: var(--bs-body-color) !important;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    background-color: var(--sidebar-bg);
+    transition: background-color 0.3s ease;
+}
+.sidebar .nav-link {
+    color: var(--sidebar-color);
+    font-weight: 500;
+}
+.sidebar .nav-link:hover {
+    background-color: var(--sidebar-link-hover-bg);
+}
+.sidebar .dropdown-toggle, .theme-switcher-wrapper {
+    color: var(--sidebar-color);
+}
+.bi {
+    margin-right: 8px;
+}
+
+/* Card Styling for tasks */
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border-color);
+    color: var(--bs-body-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Style for completed tasks */
+.task-completed {
+    opacity: 0.6;
+}
+.task-completed .card-title,
+.task-completed .card-text {
+    text-decoration: line-through;
+}

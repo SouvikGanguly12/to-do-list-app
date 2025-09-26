@@ -1,0 +1,406 @@
+{% comment %} {% comment %} {% comment %} {% comment %} {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - To-Do App</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'C:\Users\User\OneDrive\Desktop\Django\todos\static\css\home.css' %}">
+    <style>
+        body {
+            min-height: 100vh;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background-color: #0d6efd;
+            color: white;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+        }
+        .sidebar a:hover {
+            background-color: #466bffff;
+
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                min-height: auto;
+            }
+        }
+        /* Default Light Theme */
+        body {
+            background-color: #f4f7f9;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Dark Theme */
+        body.dark-theme {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+        }
+
+        /* Example: cards also change */
+        .task-date-group {
+            background-color: #ffffff;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-theme .task-date-group {
+            background-color: #34495e;
+            color: #ecf0f1;
+        }
+
+        .task-item {
+            background-color: #ecf0f1;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-theme .task-item {
+            background-color: #3b4b5a;
+            color: #ecf0f1;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+            <div class="position-sticky pt-3">
+                <h4 class="text-center">To-Do App</h4>
+                <a href="{% url 'home' %}">Home</a>
+                <a href="{% url 'today_tasks' %}">Today's Tasks</a>
+                <a href="{% url 'completed_tasks' %}">Completed Tasks</a>
+                <a href="{% url 'upcoming_tasks' %}" id="upcoming-tasks-btn">Upcoming Tasks</a>
+                <a href="">Theme</a>
+                {% comment %} <a href="#" data-bs-toggle="modal" data-bs-target="#completedTasksModal">Completed Tasks</a>
+                <a href="{% url 'logout' %}">Logout</a>
+
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="pt-3 pb-2 mb-3 border-bottom">
+                <h2>Welcome, {{ user.username }}</h2>
+            </div>
+            <h4>For Upcoming Tasks</h4>
+            <form method="POST" class="row g-3">
+                {% csrf_token %}
+                <div class="col-md-3">
+                    <input type="text" name="title" class="form-control" placeholder="Task Title" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="description" class="form-control" placeholder="Description">
+                </div>
+                <div class="col-md-3">
+                    <input type="date" name="date" class="form-control" value="{{ today|date:'Y-m-d' }}">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-success w-100">Add Task</button>
+                </div>
+            </form> 
+            
+            <form method="GET" class="mb-3">
+                <input type="date" name="date" value="{{ selected_date|date:'Y-m-d' }}">
+                <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+            </form>
+
+
+            <!-- Add New Task -->
+            <div id="addTask" class="mb-4">
+                <h4>Add New Task</h4>
+                <form method="POST" class="row g-3">
+                    {% csrf_token %}
+                    <div class="col-md-5">
+                        <input type="text" name="title" class="form-control" placeholder="Task Title" required>
+                    </div>
+                    <div class="col-md-5">
+                        <input type="text" name="description" class="form-control" placeholder="Description">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-success w-100">Add Task</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- To-Do List -->
+            <h4>Your Tasks</h4>
+            <div class="row">
+                <ul id="taskList">
+                    {% for task in tasks %}
+                        <li>{{ tasks.title }}</li>
+                    {% empty %}
+                        <li>No tasks added yet.</li>
+                    {% endfor %}
+                </ul>
+
+                {% for task in tasks %}
+                <div class="col-md-4 mb-3">
+                    <div class="card {% if task.completed %}bg-light text-decoration-line-through{% endif %}">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <input type="checkbox" onchange="window.location.href='{% url 'toggle_complete' task.id %}'" 
+                                    {% if task.completed %}checked{% endif %}>
+                                {{ task.title }}
+                            </h5>
+                            <p class="card-text">{{ task.description }}</p>
+                            <a href="{% url 'update_todo' task.id %}" class="btn btn-sm btn-primary">Update</a>
+                            <a href="{% url 'delete_todo' task.id %}" class="btn btn-sm btn-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-muted">No tasks yet. Add one above!</p>
+                {% endfor %}
+
+                
+            </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+
+            <!-- Completed Tasks Modal -->
+<div class="modal fade" id="completedTasksModal" tabindex="-1" aria-labelledby="completedTasksModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="completedTasksModalLabel">Completed Tasks</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group">
+          {% for task in todos %}
+            {% if task.completed %}
+              <li class="list-group-item text-decoration-line-through">
+                {{ task.title }}
+              </li>
+            {% endif %}
+          {% empty %}
+            <p class="text-muted">No completed tasks yet.</p>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'C:\Users\User\OneDrive\Desktop\Django\todos\static\js\home.js' %}">
+    
+</script>
+</body>
+</html>{% endcomment %}
+
+
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - To-Do App</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <style>
+        body {
+            min-height: 100vh;
+            background-color: #f4f7f9;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body.dark-theme {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            height: 100vh;
+            background-color: #0d6efd;
+            color: white;
+            position: fixed;
+            left: -250px;
+            top: 0;
+            width: 250px;
+            padding-top: 60px;
+            transition: left 0.3s;
+            z-index: 1000;
+        }
+        .sidebar.active {
+            left: 0;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px 20px;
+        }
+        .sidebar a:hover {
+            background-color: #466bff;
+        }
+
+        /* Sidebar toggle button */
+        #sidebar-toggle {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            font-size: 20px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1100;
+        }
+
+        /* Main content */
+        #main-content {
+            margin-left: 0;
+            transition: margin-left 0.3s;
+            padding: 20px;
+        }
+        #main-content.active {
+            margin-left: 250px;
+        }
+
+        /* Task Cards */
+        .task-card {
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #ecf0f1;
+            margin-bottom: 15px;
+            transition: background-color 0.3s;
+        }
+        body.dark-theme .task-card {
+            background-color: #3b4b5a;
+            color: #ecf0f1;
+        }
+        .task-card.completed {
+            text-decoration: line-through;
+            background-color: #dfe6e9;
+        }
+
+        /* Buttons */
+        .btn-toggle {
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        @media (min-width: 768px) {
+            .sidebar { left: 0; }
+            #main-content { margin-left: 250px; }
+            #sidebar-toggle { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Toggle Button -->
+    <button id="sidebar-toggle">☰</button>
+
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+        <h4 class="text-center">To-Do App</h4>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'today_tasks' %}">Today's Tasks</a>
+        <a href="{% url 'upcoming_tasks' %}">Upcoming Tasks</a>
+        <a href="{% url 'completed_tasks' %}">Completed Tasks</a>
+        <a href="">Theme</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </nav>
+
+    <!-- Main Content -->
+    <div id="main-content">
+        <div class="pt-3 pb-2 mb-3 border-bottom">
+            <h2>Welcome, {{ user.username }}</h2>
+        </div>
+
+        <h4>For Upcoming Tasks</h4>
+            <form method="POST" class="row g-3">
+                {% csrf_token %}
+                <div class="col-md-3">
+                    <input type="text" name="title" class="form-control" placeholder="Task Title" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="description" class="form-control" placeholder="Description">
+                </div>
+                <div class="col-md-3">
+                    <input type="date" name="date" class="form-control" value="{{ today|date:'Y-m-d' }}">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-success w-100">Add Task</button>
+                </div>
+            </form> 
+            
+            <form method="GET" class="mb-3">
+                <input type="date" name="date" value="{{ selected_date|date:'Y-m-d' }}">
+                <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+            </form>
+
+        <!-- Add Task -->
+        <h4>Add New Task</h4>
+        <form method="POST" class="row g-3 mb-4">
+            {% csrf_token %}
+            <div class="col-md-5">
+                <input type="text" name="title" class="form-control" placeholder="Task Title" required>
+            </div>
+            <div class="col-md-5">
+                <input type="text" name="description" class="form-control" placeholder="Description">
+            </div>
+            {% comment %} <div class="col-md-2">
+                <input type="date" name="date" class="form-control" value="{{ today|date:'Y-m-d' }}">
+            </div> {% endcomment %}
+            <div class="col-12">
+                <button type="submit" class="btn btn-success w-100">Add Task</button>
+            </div>
+        </form>
+
+        <!-- Task List -->
+        <h4>Your Tasks</h4>
+        <div class="row">
+            {% for task in tasks %}
+            <div class="col-md-4">
+                <div class="task-card {% if task.completed %}completed{% endif %}">
+                    <h5>
+                        <input type="checkbox" onchange="window.location.href='{% url 'toggle_complete' task.id %}'" {% if task.completed %}checked{% endif %}>
+                        {{ task.title }}
+                    </h5>
+                    <p>{{ task.description }}</p>
+                    <a href="{% url 'update_todo' task.id %}" class="btn btn-sm btn-primary btn-toggle">Update</a>
+                    <a href="{% url 'delete_todo' task.id %}" class="btn btn-sm btn-danger btn-toggle">Delete</a>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">No tasks yet. Add one above!</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('sidebar-toggle');
+        const mainContent = document.getElementById('main-content');
+
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            mainContent.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
+

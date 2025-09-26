@@ -1,0 +1,58 @@
+
+{% block title %}Today Tasks{% endblock %}
+
+{% block content %}
+
+<div class="added-container">
+    <h2>Today's Tasks</h2>
+
+    <div class="row">
+        {% for task in tasks_today %}
+        <div class="col-md-4 mb-3">
+            <div class="task-card">
+                <h3>{{ task.title }}</h3>
+                <p>{{ task.description }}</p>
+                <span class="task-date">Due: {{ task.date|date:"D, M d, Y" }}</span>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted">No tasks added today.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.added-container {
+    margin: 30px auto;
+    max-width: 1000px;
+}
+
+.task-card {
+    background-color: #f4f7f9;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.task-card h3 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+.task-card p {
+    color: #555;
+}
+
+.task-date {
+    font-size: 13px;
+    color: #888;
+}
+
+@media (max-width: 768px) {
+    .col-md-4 {
+        width: 100%;
+    }
+}
+</style>
+
+{% endblock %}

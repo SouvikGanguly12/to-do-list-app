@@ -1,0 +1,71 @@
+
+
+{% block title %}Completed Tasks{% endblock %}
+
+{% block content %}
+
+<!-- Embedded CSS -->
+<style>
+/* Completed Tasks Styling */
+.completed-container {
+    padding: 20px;
+}
+
+.completed-container h2 {
+    margin-bottom: 20px;
+    color: #0d6efd;
+}
+
+.completed-card {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.completed-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.completed-card h5 {
+    font-weight: 600;
+    color: #343a40;
+}
+
+.completed-card p {
+    color: #6c757d;
+}
+
+.completed-badge {
+    display: inline-block;
+    padding: 0.3em 0.6em;
+    background-color: #198754;
+    color: #fff;
+    border-radius: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+</style>
+
+<div class="completed-container">
+    <h2>Completed Tasks</h2>
+
+    <div class="row">
+        {% for task in completed %}
+        <div class="col-md-4 mb-3">
+            <div class="completed-card text-decoration-line-through">
+                <h3>{{ task.title }}</h3>
+                <p>{{ task.description }}</p>
+                <span class="completed-badge">Completed</span>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted">No completed tasks yet.</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
