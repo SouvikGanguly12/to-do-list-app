@@ -138,8 +138,6 @@ mtranslate==1.8
 multidict==6.1.0
 multitasking==0.0.11
 murmurhash==1.0.12
-mysql-connector-python==9.4.0
-mysqlclient==2.2.7
 namex==0.0.8
 nltk==3.9.1
 numba==0.61.2
@@ -303,6 +301,7 @@ yarl==1.18.3
 yfinance==0.2.55
 zope.event==5.0
 zope.interface==7.2
+
 
 
 
